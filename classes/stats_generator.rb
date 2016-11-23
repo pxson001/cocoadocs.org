@@ -33,7 +33,7 @@ class StatsGenerator
       :spm_support => File.exist?(download_location + "/Package.swift")
     }
 
-    auth_token = ENV['COCOADOCS_TOKEN']
+    auth_token = ENV['COCOADOCS_TOKEN'] 
     if auth_token
       data[:token] = auth_token
 
@@ -41,7 +41,7 @@ class StatsGenerator
       vputs data.to_s
 
       # send it to the db
-      api = ENV["COCOADOCS_API"] || 'http://cocoadocs-api.cocoapods.org'
+      api = ENV["COCOADOCS_API"]
       handle_request REST.post(escape_url(api + "/pods/#{spec.name}"), data.to_json)
     else
       puts "Not sending data - you're not the CocoaDocs server."

@@ -8,6 +8,10 @@ require 'rest'
 
 require_relative 'classes/_utils.rb'
 
+ENV['TRUNK_NOTIFICATION_PATH'] ||= 'jmango360'
+ENV["COCOADOCS_API"] ||= 'http://localhost:6666'
+ENV['COCOADOCS_TOKEN'] ||= '1234'
+
 trunk_notification_path = ENV['TRUNK_NOTIFICATION_PATH']
 trunk_notification_path ||= ARGV[0]
 abort "You need to give a Trunk webhook URL" unless trunk_notification_path
@@ -17,6 +21,7 @@ abort "You need to give a Trunk webhook URL" unless auth_token
 
 set :pod_count, 0
 set :bind, '0.0.0.0'
+set :port, 5555
 
 post "/hooks/trunk/" + trunk_notification_path do
   data = JSON.parse(request.body.read)
@@ -50,11 +55,11 @@ end
 get "/redeploy/:pod/latest" do
   content_type :json
   begin
-    trunk_spec = REST.get(escape_url("https://trunk.cocoapods.org/api/v1/pods/" + params[:pod])).body
+    trunk_spec = REST.get(escape_url("http://localhost:4567/api/v1/pods/" + params[:pod])).body
     versions = JSON.parse(trunk_spec)["versions"]
     versions = versions.map { |s| Pod::Version.new(s["name"]) }.sort.map { |semver| semver.version }
 
-    process_url "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/#{ params[:pod] }/#{ versions[-1] }/#{ params[:pod] }.podspec.json"
+    process_url "https://raw.githubusercontent.com/pxson001/trunk.cocoapods.org-test/master/Specs/#{ params[:pod] }/#{ versions[-1] }/#{ params[:pod] }.podspec.json"
     return { :parsing => true }.to_json
 
   rescue Exception => e
@@ -65,7 +70,7 @@ end
 
 get "/redeploy/:pod/:version" do
     content_type :json
-    process_url "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/#{ params[:pod] }/#{ params[:version] }/#{ params[:pod] }.podspec.json"
+    process_url "https://raw.githubusercontent.com/pxson001/trunk.cocoapods.org-test/Specs/#{ params[:pod] }/#{ params[:version] }/#{ params[:pod] }.podspec.json"
 
    return { :parsing => true }.to_json
 end

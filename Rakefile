@@ -3,6 +3,13 @@ task :bootstrap do
   sh "bundle install"
 end
 
+
+
+desc 'Start up the dynamic site'
+  task :serve do
+  sh "env PORT=5555 bundle exec foreman start"
+end
+
 begin
   require 'bundler'
   Bundler.require
@@ -119,7 +126,7 @@ begin
 
   # TODO: Put rubocop in by default
   task :default => :specs
-rescue LoadError => e
+  rescue LoadError => e
   $stderr.puts "\033[0;31m" \
     '[!] Some Rake tasks haven been disabled because the environment' \
     ' couldn’t be loaded. Be sure to run `rake bootstrap` first or use the ' \

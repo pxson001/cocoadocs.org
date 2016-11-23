@@ -51,9 +51,9 @@ class CocoaDocs < Object
     "       --master                                                               \n"
   end
 
-  $specs_repo = "CocoaPods/Specs"
-  $s3_bucket = "cocoadocs.org"
-  $website_home = "http://cocoadocs.org/"
+  $specs_repo = "pxson001/trunk.cocoapods.org-test"
+  $s3_bucket = "pxson001.trunk.cocoapods.org"
+  $website_home = "http://localhost:7777/"
   $cocoadocs_specs_name = "cocoadocs_specs"
 
   $verbose = false
@@ -177,7 +177,7 @@ class CocoaDocs < Object
     $upload_docsets_to_s3 = true
     $upload_redirects_for_spec_index = true
     $upload_site_to_s3 = true
-    $s3_bucket = "cocoadocs.org"
+    $s3_bucket = "pxson001.trunk.cocoapods.org"
     $upload_stats = true
   end
 
