@@ -6,6 +6,7 @@ require 'net/http'
 require 'json'
 require 'httparty'
 
+ENV['HOST_URL'] ||= 'http://192.168.99.100:4567/'
 
 def send_stats(number, metric_id)
   api_key = ENV['STATUS_IO_API_KEY']
@@ -22,7 +23,7 @@ def send_stats(number, metric_id)
 end
 
 
-number = REST.get("http://localhost:4567/recent_pods_count").body
+number = REST.get(ENV['HOST_URL'] + "recent_pods_count").body
 puts "Sending #{number} pods to Status.io"
 
 # Send CocoaDocs stats

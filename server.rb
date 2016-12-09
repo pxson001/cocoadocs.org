@@ -8,16 +8,18 @@ require 'rest'
 
 require_relative 'classes/_utils.rb'
 
+ENV['HOST_URL'] ||= 'http://192.168.99.100:4567/'
+
 ENV['TRUNK_NOTIFICATION_PATH'] ||= 'jmango360'
-ENV["COCOADOCS_API"] ||= 'http://localhost:6666'
-ENV['COCOADOCS_TOKEN'] ||= '1234'
+# ENV["COCOADOCS_API"] ||= 'http://localhost:6666'
+# ENV['COCOADOCS_TOKEN'] ||= '1234'
 
 trunk_notification_path = ENV['TRUNK_NOTIFICATION_PATH']
 trunk_notification_path ||= ARGV[0]
 abort "You need to give a Trunk webhook URL" unless trunk_notification_path
 
-auth_token = ENV['COCOADOCS_TOKEN']
-abort "You need to give a Trunk webhook URL" unless auth_token
+# auth_token = ENV['COCOADOCS_TOKEN']
+# abort "You need to give a Trunk webhook URL" unless auth_token
 
 set :pod_count, 0
 set :bind, '0.0.0.0'
@@ -55,11 +57,14 @@ end
 get "/redeploy/:pod/latest" do
   content_type :json
   begin
-    trunk_spec = REST.get(escape_url("http://localhost:4567/api/v1/pods/" + params[:pod])).body
+    trunk_spec = REST.get(escape_url(ENV['HOST_URL'] + "api/v1/pods/" + params[:pod])).body
     versions = JSON.parse(trunk_spec)["versions"]
     versions = versions.map { |s| Pod::Version.new(s["name"]) }.sort.map { |semver| semver.version }
+    trunk_spec_latest = REST.get(escape_url(ENV['HOST_URL'] + "api/v1/pods/" + params[:pod]) + "/versions/" + versions[-1]).body
+    
+    process_url JSON.parse(trunk_spec_latest)["data_url"]
 
-    process_url "https://raw.githubusercontent.com/pxson001/trunk.cocoapods.org-test/master/Specs/#{ params[:pod] }/#{ versions[-1] }/#{ params[:pod] }.podspec.json"
+    # process_url "https://gitlab.com/api/v3/projects/2133476/repository/blobs/master?filepath=Specs/#{ params[:pod] }/#{ versions[-1] }/#{ params[:pod] }.podspec.json"
     return { :parsing => true }.to_json
 
   rescue Exception => e
@@ -70,7 +75,10 @@ end
 
 get "/redeploy/:pod/:version" do
     content_type :json
-    process_url "https://raw.githubusercontent.com/pxson001/trunk.cocoapods.org-test/Specs/#{ params[:pod] }/#{ params[:version] }/#{ params[:pod] }.podspec.json"
+
+    trunk_spec = REST.get(escape_url(ENV['HOST_URL'] + "api/v1/pods/" + params[:pod]) + "/versions/" + params[:version]).body
+
+    process_url JSON.parse(trunk_spec)["data_url"]
 
    return { :parsing => true }.to_json
 end

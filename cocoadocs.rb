@@ -213,7 +213,7 @@ class CocoaDocs < Object
 
     FileUtils.mkdir_p(File.dirname(podspec_path))
 
-    open(url) do|f|
+    open(url, 'Accept' => 'application/json', 'Content-Type' => 'application/json', 'PRIVATE-TOKEN' => ENV['GL_TOKEN']) do|f|
       File.open(podspec_path, 'w') { |tmp| tmp.write(f.read) }
       @params = [podspec_path]
       doc

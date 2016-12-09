@@ -7,7 +7,7 @@ end
 
 desc 'Start up the dynamic site'
   task :serve do
-  sh "env PORT=5555 bundle exec foreman start"
+  sh "bundle exec foreman start"
 end
 
 begin
@@ -91,9 +91,7 @@ begin
   desc 'Sets up installation of apps for cocoadocs'
   task :install_tools do
     if `which brew`.length == 0
-      puts "Homebrew was not found, would you like us to install it for you? yes/no"
-      exit unless STDIN.gets.strip == 'yes'
-
+      puts "Homebrew was not found, install Homebrew ..........."
       `ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
     end
 
